@@ -1,0 +1,6 @@
+- [ ] Learn markdown language and use it to write your README.md and project roadmap documents. Find and use a prior README as an example. 
+- [ ]Setup roadmap as a task list with check boxes. 
+- [ ]Assign team members for the next two week sprint to each tasks. Tasks need to be specific such "find related repository and evaluate it" or "test X repository and get it running, reporting on any issues and documenting how to make it work".
+- [ ]Search for a related existing repository on Github and clone it to your team
+- [ ] [optional] create a separate repository in your team for your development code (or you can just develop in your clone. Ensure repo is public and assign an open source license.)
+
