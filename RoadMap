@@ -1,6 +1,12 @@
-- [ ] Learn markdown language and use it to write your README.md and project roadmap documents. Find and use a prior README as an example. 
-- [ ]Setup roadmap as a task list with check boxes. 
-- [ ]Assign team members for the next two week sprint to each tasks. Tasks need to be specific such "find related repository and evaluate it" or "test X repository and get it running, reporting on any issues and documenting how to make it work".
-- [ ]Search for a related existing repository on Github and clone it to your team
-- [ ] [optional] create a separate repository in your team for your development code (or you can just develop in your clone. Ensure repo is public and assign an open source license.)
-
+- [X] Learn markdown language and use it to write your README.md and project roadmap documents. Find and use a prior README as an example. 
+- [X]Setup roadmap as a task list with check boxes. 
+- [X]Assign team members for the next two week sprint to each tasks. Tasks need to be specific such "find related repository and evaluate it" or "test X repository and get it running, reporting on any issues and documenting how to make it work".
+- [X]Search for a related existing repository on Github and clone it to your team
+- [N/A] [optional] create a separate repository in your team for your development code (or you can just develop in your clone. Ensure repo is public and assign an open source license.)
+- [X] Add python file with original code
+- [X] Edit code with minimum 3 additional functionalities:
+- [X] (a) Functionality 1: Savings Calculator
+- [X] (b) Functionality 2: Set Categories dor budget & expenses
+- [X] (c) Functionality 3: Import/Export Data
+- [X] Test App & functionalities
+- [X] Create & upload Powerpoint
