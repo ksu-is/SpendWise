@@ -146,8 +146,8 @@ def savings_calculator(budget):
         
         
         
-#Welcome message
-print("\nWelcome to MyMoney Expense Tracker!")
+# Welcome message
+print("\nManage your expenses easily and save smarter with our intuitive software. Let's get started!")
 print("This app allows you to record and view your spending habits to help you become a more conscious spender!")
  
 #Main loop for user input
