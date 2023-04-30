@@ -122,6 +122,27 @@ def analysis():
         print("Your balance is more than $ 2500. You are doing great. Try to save more  :) ")
     else:
         print() 
+        
+# Function to calculate savings required to reach financial goals
+def savings_calculator(budget):
+    #call init function
+    init()  
+    from datetime import date
+    month = date.today().strftime("%Y-%m")
+    conn = sqlite3.connect("spent.db")
+    cur = conn.cursor()
+    sql = '''
+    select sum(amount) from expenses where date like'{}%'
+    '''.format(month)
+    cur.execute(sql)
+    month_amount = cur.fetchone()[0]
+    if month_amount is None:
+        month_amount = 0
+    savings_required = float(budget) - month_amount
+    print("To reach your financial goal, you need to save $", savings_required, "per month.")
+        
+        
+        
 #Welcome message
 print("\nWelcome to MyMoney Expense Tracker!")
 print("This app allows you to record and view your spending habits to help you become a more conscious spender!")
