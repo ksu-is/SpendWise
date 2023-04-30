@@ -14,6 +14,9 @@ def init():
     '''
     cur.execute(sql)
     conn.commit()
+    
+    # Call the init() function to create the expenses table
+init()
 
 #Fuction to record expenses to the database
 def log(amount, category, message=""):
