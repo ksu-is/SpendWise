@@ -1,10 +1,12 @@
 import sqlite3
 
-#Function to initialize a database
+# Function to initialize a database
 def init():
     conn = sqlite3.connect("spent.db")
     cur = conn.cursor()
-    sql = '''
+
+    # Create expenses table if it doesn't exist
+    sql_expenses = '''
     create table if not exists expenses (
         amount number,
         category string,
@@ -12,13 +14,18 @@ def init():
         date string
         )
     '''
-    cur.execute(sql)
-    conn.commit()
+    cur.execute(sql_expenses)
+
     
-    # Call the init() function to create the expenses table
+
+
+# Call the init() function to create the expenses table and category_budgets table
 init()
 
-#Fuction to record expenses to the database
+# ... rest of the code ...
+
+
+# Function to record expenses to the database
 def log(amount, category, message=""):
     from datetime import datetime
     date = str(datetime.now())
@@ -39,8 +46,8 @@ def log(amount, category, message=""):
     except:
         print('\nExpense not saved. Please try again and do not punctuate the category or detailed message.\n')
 
-#Function to view expenses based on a specific category or month/day
-def view(category, date):
+# Function to view expenses based on a specific category or month/day
+def view(category="", date=""):
     conn = sqlite3.connect("spent.db")
     cur = conn.cursor()
     if category.isalpha():
@@ -50,6 +57,9 @@ def view(category, date):
         sql2 = '''
         select sum(amount) from expenses where category = '{}' and date like '{}%'
         '''.format(category, date)
+        sql3 = '''
+        select budget from category_budgets where category = '{}'
+        '''.format(category)
     else:
         sql = '''
         select * from expenses where date like '{}%'
@@ -57,78 +67,29 @@ def view(category, date):
         sql2 = '''
         select sum(amount) from expenses where date like '{}%'
         '''.format(date)
+        sql3 = None
+
     cur.execute(sql)
     results = cur.fetchall()
     cur.execute(sql2)
     total_amount = cur.fetchone()[0]
+
+    if sql3 is not None:
+        cur.execute(sql3)
+        category_budget = cur.fetchone()
+        if category_budget is not None:
+            category_budget = category_budget[0]
+            remaining_budget = category_budget - total_amount
+            print(f'\nRemaining budget for {category}: ${remaining_budget}')
+
     for expense in results:
         print(expense)
     print('\nTotal:','$' + str(total_amount))
 
-#Fuction for comparing current months spending to a month selected by the user
-def compare(comp_month):
-    from datetime import date
-    month = date.today().strftime("%Y-%m")
-    conn = sqlite3.connect("spent.db")
-    cur = conn.cursor()
-    sql = '''
-    select sum(amount) from expenses where date like'{}%'
-    '''.format(month)
-    sql2 = '''
-    select sum(amount) from expenses where date like'{}%'
-    '''.format(comp_month)
-    cur.execute(sql)
-    month_amount = cur.fetchone()[0]
-    cur.execute(sql2)
-    comp_month_amount = cur.fetchone()[0]
-    if comp_month_amount == None:
-        print('\nNo expenses recorded for that month')
-    elif month_amount > comp_month_amount:
-        percent = ((month_amount / comp_month_amount) - 1) * 100
-        print('\nSo far your spending is already up',str(percent) + '% this month compared to', comp_month)
-    elif month_amount == comp_month_amount:
-        print('\nSo far you have the spent the same amount of money this month')
-    else:
-        percent = (1 - (month_amount / comp_month_amount)) * 100
-        print('\nSo far your spending is down',str(percent) + '% this month compared to', comp_month)
-def analysis():
-    conn = sqlite3.connect("spent.db")
-    cur = conn.cursor()
-    sql = '''
-    select * from expenses
-    '''.format(tracker)
-    sql2 = '''
-    select sum(amount) from expenses
-    '''.format(tracker)
-    cur.execute(sql)
-    results = cur.fetchall()
-    cur.execute(sql2)
-    total_amount = cur.fetchone()[0]
-    for expense in results:
-        print(expense)
-    print('\nTotal:','$' + str(total_amount))
-    newbudget = int(total)- int(total_amount)  
-    print("Your new balance is $", newbudget)
-    if int(total_amount) > int(total):
-        print ("You are under budget. Please save your money or else you will go bankrupt! I am serious")
-    if int(newbudget) > 0 and int(newbudget) < 500:
-        print("You are under $500, please try to save more money")
-    elif int(newbudget) > 500 and int(newbudget) < 1000:
-        print("Your balance is more than $ 500. You are doing great. Try to save more  :) ")
-    elif int(newbudget) > 1000 and int(newbudget) < 1500:
-        print("Your balance is more than $ 1000. You are doing great. Try to save more  :) ") 
-    elif int(newbudget) > 1500 and int(newbudget) < 2000:
-        print("Your balance is more than $ 1500. You are doing great. Try to save more  :) ")
-    elif int(newbudget) > 2000 and int(newbudget) < 2500:
-        print("Your balance is more than $ 2000. You are doing great. Try to save more  :) ")
-    elif int(newbudget) > 2500 :
-        print("Your balance is more than $ 2500. You are doing great. Try to save more  :) ")
-    else:
-        print() 
-        
+
 # Function to calculate savings required to reach financial goals
 def savings_calculator(budget):
-    #call init function
+    #NEW NEW NEW
     init()  
     from datetime import date
     month = date.today().strftime("%Y-%m")
@@ -143,18 +104,67 @@ def savings_calculator(budget):
         month_amount = 0
     savings_required = float(budget) - month_amount
     print("To reach your financial goal, you need to save $", savings_required, "per month.")
-        
-        
-        
+
+
 # Welcome message
 print("\nManage your expenses easily and save smarter with our intuitive software. Let's get started!")
 print("This app allows you to record and view your spending habits to help you become a more conscious spender!")
- 
+
+
+#NEW FEATURE: IMPLEMENT A BUDGETING CATEGORY
+#this will create a new table in the database to store the category budgets
+sql_category_budget = '''
+create table if not exists category_budgets (
+    category string primary key,
+    budget number
+    )
+'''
+
+
+#create function to set, update and view category budgets
+def set_category_budget(category, budget):
+    conn = sqlite3.connect("spent.db")
+    cur = conn.cursor()
+    
+    # Check if category_budgets table exists, if not, create it
+    sql_create = '''
+    create table if not exists category_budgets (
+        category string primary key,
+        budget number
+    )
+    '''
+    cur.execute(sql_create)
+    conn.commit()
+    
+    # Insert or update the category budget
+    sql_insert_update = '''
+    insert or replace into category_budgets (category, budget)
+    values (?, ?)
+    '''
+    cur.execute(sql_insert_update, (category, budget))
+    conn.commit()
+
+    print(f"Budget for {category} has been set to ${budget}")
+
+
+def view_category_budgets():
+    conn = sqlite3.connect("spent.db")
+    cur = conn.cursor()
+    sql = '''
+    select * from category_budgets
+    '''
+    cur.execute(sql)
+    results = cur.fetchall()
+    for budget in results:
+        print(f'{budget[0]}: ${budget[1]}')
+
+
+
 #Main loop for user input
 total= input("What is your current total budget?\n:")
 while True:
         print("\nWhat would you like to do?")
-        print("1 - Initialize an expense database(only do this once)\n2 - Enter an expense\n3 - View expenses based on date and category\n4 - Compare Month\n5 - Check Balance\n6 - Update balance\n7 - Calculate Savings Required\nQ - Quit")
+        print("1 - Initialize an expense database (only do this once)\n2 - Enter an expense\n3 - View expenses based on date and category\n4 - Compare Month\n5 - Check Balance\n6 - Update balance\n7 - Calculate Savings Required\n8 - Set Category Budget\n9 - View Category Budgets\nQ - Quit")
         ans = input(":")
         print()
 
@@ -188,3 +198,13 @@ while True:
         elif ans.lower() == "q":
             print('Goodbye!\n')
             break
+        elif ans == "8":
+            cat = input('What is the category for which you want to set a budget?\n1 - Food\n2 - Entertainment\n3 - Education\n4 - Travel\n5 - Car\n6 - Utilities\n7 - Insurance\n8 - Other\n:').title()
+            budget = input(f'What is the budget for {cat}?\n:')
+            set_category_budget(cat, budget)
+        elif ans == "9":
+            print('\nCategory Budgets:')
+            view_category_budgets()
+
+
+
