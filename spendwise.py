@@ -154,7 +154,7 @@ print("This app allows you to record and view your spending habits to help you b
 total= input("What is your current total budget?\n:")
 while True:
         print("\nWhat would you like to do?")
-        print("1 - Initialize an expense database(only do this once)\n2 - Enter an expense\n3 - View expenses based on date and category\n4 - Compare Month\n5 - Check Balance\n6 - Update balance\nQ - Quit")
+        print("1 - Initialize an expense database(only do this once)\n2 - Enter an expense\n3 - View expenses based on date and category\n4 - Compare Month\n5 - Check Balance\n6 - Update balance\n7 - Calculate Savings Required\nQ - Quit")
         ans = input(":")
         print()
 
@@ -182,7 +182,9 @@ while True:
             if total.isnumeric():
                 print("You now have $ ", total)
             else:
-                total=input("Only in numbers please, \nWhat is your new balance?\n:")                
+                total=input("Only in numbers please, \nWhat is your new balance?\n:")
+        elif ans == "7":
+            savings_calculator(total)
         elif ans.lower() == "q":
             print('Goodbye!\n')
             break
